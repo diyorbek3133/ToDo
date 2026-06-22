@@ -26,3 +26,4 @@ class LoginUserSerializer(serializers.Serializer):
             raise serializers.ValidationError("user or password error")
         data["user"] = user
         return data
+"test"
