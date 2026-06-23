@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ro'yxatdan o'tish — Anime ToDo</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        
+        body {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            color: #f8fafc;
+            position: relative;
+            overflow: hidden;
+        }
+
+        body::before {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-image: url('https://i.giphy.com/media/v1.Y2lkPTc5MGI3NjExbmsxamN6NDZ3amM4OHlreXV5cWR0bXpjZ3h4czB2MGJ6azF6NGRwZCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/13HgwGsXF0aiGY/giphy.gif');
+            background-size: cover;
+            background-position: center;
+            filter: blur(4px) brightness(0.3);
+            z-index: -1;
+        }
+
+        .auth-card {
+            background: rgba(15, 23, 42, 0.75);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            width: 100%;
+            max-width: 400px;
+            padding: 40px 30px;
+            border-radius: 24px;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6);
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+        .brand { text-align: center; margin-bottom: 32px; }
+        .brand i { font-size: 42px; color: #10b981; margin-bottom: 12px; text-shadow: 0 0 15px rgba(16, 185, 129, 0.6); }
+        .brand h2 { font-size: 26px; font-weight: 700; }
+        .brand p { color: #94a3b8; font-size: 14px; margin-top: 6px; }
+
+        .input-box { position: relative; margin-bottom: 20px; }
+        .input-box i { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: #64748b; font-size: 18px; }
+        .input-box input {
+            width: 100%;
+            padding: 16px 16px 16px 48px;
+            background: rgba(30, 41, 59, 0.8);
+            border: 1px solid rgba(255,255,255,0.05);
+            border-radius: 14px;
+            color: white;
+            font-size: 15px;
+            outline: none;
+            transition: all 0.3s;
+        }
+        .input-box input:focus { border-color: #10b981; box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.25); }
+
+        .btn-submit {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #10b981, #059669);
+            border: none;
+            border-radius: 14px;
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 10px 20px rgba(16, 185, 129, 0.3);
+        }
+        .btn-submit:hover { opacity: 0.95; transform: translateY(-1px); }
+
+        .switch-text { text-align: center; margin-top: 24px; font-size: 14px; color: #94a3b8; }
+        .switch-text a { color: #10b981; text-decoration: none; font-weight: 600; cursor: pointer; }
+        .switch-text a:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+
+    <div class="auth-card">
+        <div class="brand">
+            <i class="fas fa-user-plus"></i>
+            <h2>Ro'yxatdan O'tish</h2>
+            <p>Yangi va toza sahifa oching</p>
+        </div>
+
+        <form id="register-form">
+            <div class="input-box">
+                <i class="fas fa-user"></i>
+                <input type="text" id="reg-username" placeholder="Username tanlang" required>
+            </div>
+            <div class="input-box">
+                <i class="fas fa-lock"></i>
+                <input type="password" id="reg-password" placeholder="Parol yarating" required>
+            </div>
+            <button type="submit" class="btn-submit">Ro'yxatdan o'tish</button>
+        </form>
+
+        <p class="switch-text">Hisobingiz bormi? <a id="go-to-login">Kirish</a></p>
+    </div>
+
+    <script>
+        const BASE_URL = "http://127.0.0.1:8000";
+
+        document.getElementById('go-to-login').addEventListener('click', () => {
+            window.location.href = window.location.origin + window.location.pathname.replace("register.html", "login.html");
+        });
+
+        document.getElementById('register-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const username = document.getElementById('reg-username').value;
+            const password = document.getElementById('reg-password').value;
+
+            try {
+                const res = await fetch(`${BASE_URL}/user/register/`, { 
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+
+                if (res.ok) {
+                    alert("Muvaffaqiyatli ro'yxatdan o'tdingiz!");
+                    window.location.href = window.location.origin + window.location.pathname.replace("register.html", "login.html");
+                } else {
+                    alert("Bu foydalanuvchi nomi band bo'lishi mumkin.");
+                }
+            } catch (err) {
+                console.error(err);
+            }
+        });
+    </script>
+</body>
+</html>

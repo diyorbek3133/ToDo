@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kirish — Anime ToDo</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        
+        body {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            color: #f8fafc;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Anime Background */
+        body::before {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-image: url('https://i.giphy.com/media/v1.Y2lkPTc5MGI3NjExM3Z0cmR6ZXI0Zmx1bms4YzhkZXg0bXBrZDR3bXh5NDNid3Y5M3Z6diZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/bfe7uLw8G69S8/giphy.gif');
+            background-size: cover;
+            background-position: center;
+            filter: blur(4px) brightness(0.3);
+            z-index: -1;
+        }
+
+        .auth-card {
+            background: rgba(15, 23, 42, 0.75);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            width: 100%;
+            max-width: 400px;
+            padding: 40px 30px;
+            border-radius: 24px;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6);
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+        .brand { text-align: center; margin-bottom: 32px; }
+        .brand i { font-size: 42px; color: #3b82f6; margin-bottom: 12px; text-shadow: 0 0 15px rgba(59, 130, 246, 0.6); }
+        .brand h2 { font-size: 26px; font-weight: 700; }
+        .brand p { color: #94a3b8; font-size: 14px; margin-top: 6px; }
+
+        .input-box { position: relative; margin-bottom: 20px; }
+        .input-box i { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: #64748b; font-size: 18px; }
+        .input-box input {
+            width: 100%;
+            padding: 16px 16px 16px 48px;
+            background: rgba(30, 41, 59, 0.8);
+            border: 1px solid rgba(255,255,255,0.05);
+            border-radius: 14px;
+            color: white;
+            font-size: 15px;
+            outline: none;
+            transition: all 0.3s;
+        }
+        .input-box input:focus { border-color: #3b82f6; box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.25); }
+
+        .btn-submit {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            border: none;
+            border-radius: 14px;
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 10px 20px rgba(59, 130, 246, 0.3);
+        }
+        .btn-submit:hover { opacity: 0.95; transform: translateY(-1px); }
+
+        .switch-text { text-align: center; margin-top: 24px; font-size: 14px; color: #94a3b8; }
+        .switch-text a { color: #3b82f6; text-decoration: none; font-weight: 600; cursor: pointer; }
+        .switch-text a:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+
+    <div class="auth-card">
+        <div class="brand">
+            <i class="fas fa-clipboard-list"></i>
+            <h2>Tizimga Kirish</h2>
+            <p>Vazifalaringizni tartiblash vaqti keldi</p>
+        </div>
+
+        <form id="login-form">
+            <div class="input-box">
+                <i class="fas fa-user"></i>
+                <input type="text" id="login-username" placeholder="Foydalanuvchi nomi" required>
+            </div>
+            <div class="input-box">
+                <i class="fas fa-lock"></i>
+                <input type="password" id="login-password" placeholder="Parol" required>
+            </div>
+            <button type="submit" class="btn-submit">Kirish</button>
+        </form>
+
+        <p class="switch-text">Hisobingiz yo'qmi? <a id="go-to-register">Ro'yxatdan o'tish</a></p>
+    </div>
+
+    <script>
+        const LOGIN_URL = "http://127.0.0.1:8000/user/login/"; 
+
+        document.getElementById('go-to-register').addEventListener('click', () => {
+            window.location.href = window.location.origin + window.location.pathname.replace("login.html", "register.html");
+        });
+
+        document.getElementById('login-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const username = document.getElementById('login-username').value;
+            const password = document.getElementById('login-password').value;
+
+            try {
+                const res = await fetch(LOGIN_URL, { 
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+                const data = await res.json();
+
+                if (data && data.access) {
+                    localStorage.setItem('access_token', data.access);
+                    localStorage.setItem('username', data.user || username);
+                    window.location.href = window.location.origin + window.location.pathname.replace("login.html", "dashboard.html");
+                } else {
+                    alert("Username yoki parol xato!");
+                }
+            } catch (err) {
+                console.error(err);
+                alert("Serverga ulanishda xatolik!");
+            }
+        });
+    </script>
+</body>
+</html>

@@ -25,7 +25,6 @@ class Todoaddpost(ListCreateAPIView):
 
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)
-
 class Todoobject(RetrieveUpdateDestroyAPIView):
     queryset = Todo.objects.select_related("owner")
     serializer_class = TodoObjectSerializer
@@ -39,7 +38,7 @@ class Todoobject(RetrieveUpdateDestroyAPIView):
                     instance.is_finished = request.data.get("is_finished",True)
                     instance.end_time = now()
                     instance.save()
-                    data=self.serializer_class(instance).data()
+                    data=self.serializer_class(instance).data
                     
                     return Response(data,status=status.HTTP_201_CREATED)
                 return Response({"msg": "you only change when it false"})
